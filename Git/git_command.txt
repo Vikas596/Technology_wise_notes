@@ -60,5 +60,70 @@ How to create a commit (a save point in time) with git commit
 How to view your project's history using git log
 
 
+--------------------------------------------------------------------------------------------------------
 
+Git Configuration (git config) – Complete Overview
+🔹 What is git config?
+
+git config is used to set, get, and manage Git settings at different levels:
+
+System (entire system)
+
+Global (current user)
+
+Local (specific repository)
+
+🔹 Common Git Configuration Levels
+Level	Scope
+--system	All users on the system
+--global	Current user
+--local	Current repository
+🔹 Essential Git Configurations
+1. User Identity
+git config --global user.name "Your Name"
+git config --global user.email "your.email@example.com"
+
+
+Used to identify commit authorship.
+
+2. Colored Output
+git config --global color.ui auto
+
+
+Improves readability of Git command outputs.
+
+3. Default Editor
+git config --global core.editor nano
+
+
+Defines which editor Git uses for commit messages.
+
+4. Line Ending Handling
+git config --global core.autocrlf input
+
+
+Prevents line-ending issues across different operating systems.
+
+5. Git Aliases
+git config --global alias.st status
+git config --global alias.lg "log --color --graph --pretty=format:..."
+
+
+Speeds up frequently used Git commands.
+
+🔹 Local Configuration Example
+git config user.name "Lab User"
+
+
+Overrides global settings for a specific repository.
+
+✅ Key Takeaways
+
+Git configurations control behavior, identity, and usability
+
+Global config applies everywhere
+
+Local config is repo-specific
+
+Aliases significantly boost productivity
 
