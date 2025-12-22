@@ -127,3 +127,63 @@ Local config is repo-specific
 
 Aliases significantly boost productivity
 
+--------------------------------------------------------------------------------------------------
+
+day 4 --
+
+Git Technology – Staging Area & File Control
+🔹 1. Git Staging Area
+
+Definition:
+The staging area is an intermediate step between the working directory and commit history. It allows selecting specific changes to include in a commit.
+
+Command:
+
+git add <file>
+
+🔹 2. Ignoring Files with .gitignore
+
+Definition:
+.gitignore tells Git which files or patterns should not be tracked, such as logs, temp files, or secrets.
+
+Example:
+
+*.log
+
+🔹 3. Viewing Changes Before Commit
+
+Definition:
+git diff shows line-by-line changes between the working directory and the staging area.
+
+Command:
+
+git diff
+
+🔹 4. Unstaging Files
+
+Definition:
+Unstaging removes files from the staging area without deleting or modifying file content.
+
+Command:
+
+git restore --staged <file>
+
+🔹 5. Checking Repository Status
+
+Definition:
+Displays the current state of files: staged, unstaged, and untracked.
+
+Command:
+
+git status
+
+✅ Summary
+
+git add → move changes to staging
+
+.gitignore → prevent unwanted files from tracking
+
+git diff → review changes safely
+
+git restore --staged → remove files from staging
+
