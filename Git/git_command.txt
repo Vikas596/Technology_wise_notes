@@ -187,3 +187,56 @@ git diff → review changes safely
 
 git restore --staged → remove files from staging
 
+------------------------------------------------------------------------------------------
+
+Git Technology – Branching & Merging
+🔹 What is a Git Branch?
+
+A branch is a separate line of development that allows working on features without affecting the main codebase.
+
+🔹 Create a Branch
+git branch <branch-name>
+
+🔹 Switch Branches
+git checkout <branch-name>
+# OR
+git switch <branch-name>
+
+
+✔ git switch is newer and clearer (Git ≥ 2.23)
+
+🔹 Create & Switch in One Command
+git checkout -b <branch-name>
+# OR
+git switch -c <branch-name>
+
+🔹 Merge Branches
+git merge <branch-name>
+
+
+Merges changes into the current branch.
+
+🔹 Delete a Branch
+git branch -d <branch-name>
+
+
+Deletes only if fully merged (safe delete).
+
+git branch -D <branch-name>
+
+
+Force delete (use carefully).
+
+🔹 View All Branches
+git branch
+git branch -a
+
+✅ Summary
+
+Branches isolate work
+
+Switching controls context
+
+Merging integrates changes
+
+Deleting keeps repo clean
