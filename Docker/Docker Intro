@@ -100,3 +100,83 @@ CREATED: The time elapsed since the container was created. For example, "About a
 STATUS: Displays the current state of the container. "Exited (0)" means the container has finished running successfully, and the number "0" typically indicates no errors occurred.
 PORTS: Lists any network ports the container is using to communicate with the outside world. This might be blank if no ports are configured.
 NAMES: A user-friendly name automatically assigned to the container, such as "tender_gagarin". This name can be used to identify the container instead of the long CONTAINER ID.
+
+
+-------------------------------------------------------------------------------------------------------------------------
+
+Introduction to Docker Hub
+
+Docker Hub is an online platform where you can find, download, and share Docker images. It acts as a centralized repository, making it easy to use various software
+ without building images from scratch. You can search for and pull images for web servers, databases, and thousands of other applications, ranging from simple utilities
+  to complex computing frameworks, covering a vast array of needs and uses.
+
+Understanding the Run Command
+
+As mentioned before, the docker run command allows you to create and start a container in one seamless step. While efficient, this command encompasses several underlying processes:
+
+First, it checks if the specified image is available locally. If not, it pulls the image from Docker Hub or another registry.
+Then, it creates a container based on the downloaded image.
+Finally, it starts the created container immediately.
+
+== Pulling an External Docker Image ==
+
+A key feature of Docker is its ability to access a vast library of pre-built images from Docker Hub. You can download these images to your local machine using the docker pull command, which by default retrieves images from Docker Hub, unless specified otherwise.
+
+== Creating a Container == 
+
+After pulling an image, the next step is to create a container. The docker create command sets up a container from a downloaded image without starting it immediately, offering flexibility for configuring containers.
+
+Here are two examples of creating a container without and with a name:
+
+Bash
+Copy to clipboard
+# 1. Creating a container without specifying a name
+docker create nginx
+
+# 2. Creating a container with a custom name
+docker create --name my-nginx nginx
+
+Checking the Container Status: Created
+
+After creating a container, you can check its status using the docker ps -a command.
+
+For instance, you might see an output like this:
+
+Plain text
+Copy to clipboard
+CONTAINER ID   IMAGE     COMMAND                  CREATED         STATUS    PORTS     NAMES
+c49adf897b2a   nginx     "/docker-entrypoint.…"   3 minutes ago   Created             my-nginx
+This indicates that the container's status is "Created", meaning it hasn't run any processes yet. Additionally, you can see the name my-nginx, which highlights the user-friendly identifier you've assigned, making it easier to manage the container.
+
+Starting a Container
+
+The docker start command is used to initiate an existing Docker container. Unlike docker run, which creates and starts a container in one step, docker start only handles the starting process, assuming the container is already created.
+
+Using the earlier example, you have two options to start the my-nginx container:
+
+Bash
+Copy to clipboard
+# Option 1: Start the container using the name
+docker start my_nginx
+# Output: my_nginx
+
+# Option 2: Start the container using the container ID
+docker start c49adf897b2a
+# Output: c49adf897b2a
+
+== Stopping a Running Container == 
+
+
+After running the Nginx container, you might need to stop it at some point. The docker stop command works similarly to docker start, allowing you to use either the container's name or ID.
+
+To stop the my-nginx container you can use one of the following options:
+
+Bash
+Copy to clipboard
+# Option 1: Stop the container using the name
+docker stop my-nginx
+# Output: my-nginx
+
+# Option 1: Stop the container using the container ID
+docker stop c49adf897b2a
+# Output: c49adf897b2a
