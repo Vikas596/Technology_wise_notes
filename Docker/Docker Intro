@@ -180,3 +180,105 @@ docker stop my-nginx
 # Option 1: Stop the container using the container ID
 docker stop c49adf897b2a
 # Output: c49adf897b2a
+
+==================================================================================================================
+
+What is a Dockerfile?
+A Dockerfile is essentially a set of instructions used to build a Docker image. It's a straightforward text document that outlines a series of commands to systematically assemble an image. This file should be named Dockerfile with an uppercase 'D' and no file extension. This naming convention allows Docker to automatically recognize and use it during the build process.
+
+Basic Syntax of a Dockerfile
+
+Let's explore the basic syntax of a Dockerfile, which outlines how your Docker image will be assembled. While there are numerous commands you can use, let's start with some key ones.
+
+Each of these instructions plays a significant role in configuring your Docker image:
+
+FROM: This instruction specifies the base image for your Dockerfile. Consider it the foundation upon which your image is built. For instance, you might start with an image like nginx or node based on your project requirements. Every Dockerfile begins with a FROM instruction, indicating the starting point of your image.
+
+RUN: This command executes instructions in the shell during the image-building process. For example, you might use RUN to install software or apply system updates. These commands are executed once when you build the image, setting up the environment needed for your application.
+
+COPY: This command is used to move files from your host machine into the image's filesystem. For instance, you might use COPY to add your website's HTML files into the web server's directory in the image, ensuring your application has the files it needs to run properly.
+
+CMD: This instruction specifies the default command to run when your container starts. Unlike RUN, which executes during the image-building process, CMD runs when you launch the container. For instance, you might use CMD to start a web server or an application. It's the command that the container performs every time it starts up.
+
+Where to Place Your Dockerfile?
+
+Before we dive into writing a Dockerfile, let's understand the structure of our example project. For this lesson, we'll use a simple project consisting of a custom HTML file named index.html that we wish to serve using Nginx.
+
+The project directory will look like this:
+
+Copy to clipboard
+/project-directory
+  ├── Dockerfile
+  └── index.html
+While you can technically place your Dockerfile in different directories, best practice dictates that you should place it at the root of your project. This ensures ease of management and that Docker can accurately locate the Dockerfile when executing the build command. By keeping all related files in one directory, you streamline the build process and ensure Docker has immediate access to your specified context.
+
+Step 1: Specify the Base Image with FROM
+To begin writing our Dockerfile, we first use the FROM command to define the base image.
+
+Dockerfile
+Copy to clipboard
+# Use the official nginx image as the base image
+FROM nginx:1.27.2
+This instruction sets the base image. Here, we're using nginx:1.27.2, indicating a specific version. Choosing a specific version helps to ensure stability and compatibility by preventing unexpected changes when the base image gets updated.
+
+Step 2: Update the System with RUN
+With the base image set, the next step is to utilize the RUN command to execute commands like installing software or applying updates.
+
+Dockerfile
+Copy to clipboard
+# Use the official nginx image as the base image
+FROM nginx:1.27.2
+
+# Run an update using the package manager
+RUN apt-get update
+This command runs shell commands inside the image during the build process. In this context, apt-get update refreshes the package lists, ensuring you have the latest version information when you install any additional packages. These operations are captured in a new image layer.
+
+Step 3: Add Files to the Image with COPY
+With the system updated, we now leverage the COPY command to incorporate necessary files from your host system into the image.
+
+Dockerfile
+Copy to clipboard
+# Use the official nginx image as the base image
+FROM nginx:1.27.2
+
+# Run an update using the package manager
+RUN apt-get update
+
+# Copy custom HTML file to the default nginx directory
+COPY index.html /usr/share/nginx/html/
+The COPY instruction transfers files or directories from your host file system into the Docker image. The syntax COPY <source> <destination> places index.html from the current directory to /usr/share/nginx/html/ in the image.
+
+Step 4: Define the Container's Default Behavior with CMD
+Finally, we employ the CMD command to define the container's behavior upon starting.
+
+Dockerfile
+Copy to clipboard
+# Use the official nginx image as the base image
+FROM nginx:1.27.2
+
+# Run an update using the package manager
+RUN apt-get update
+
+# Copy custom HTML file to the default nginx directory
+COPY index.html /usr/share/nginx/html/
+
+# Set the default command to run when starting the container
+CMD ["nginx", "-g", "daemon off;"]
+This instruction sets the default executable to run when the container starts. We use an array syntax, ["executable", "param1", "param2"], as it avoids involving shell processing issues common in shell form. The command ["nginx", "-g", "daemon off;"] is used to instruct Nginx not to run as a background process (daemon) and instead to stay active in the foreground. By running in the foreground, Nginx continuously serves web content, which is necessary to keep the container running and responsive.
+
+Building Your Custom Image
+
+With our Dockerfile in place, it's time to build the custom image. We'll use the docker build command to turn our instructions into a working image.
+
+Open your terminal, navigate to the directory with your Dockerfile, and together, let's run this command:
+
+
+# Build custom image from Dockerfile
+docker build -t custom-nginx .
+When building a Docker image, each part of the docker build command plays a crucial role:
+
+docker build Command: Used to create a Docker image from a Dockerfile by converting its instructions into a working image.
+
+-t Option: Tags the image with a specified name, like custom-nginx, for easy identification and management.
+
+. (Dot) at the End: Tells Docker to look in the current folder for the Dockerfile and any necessary files to build the image.
