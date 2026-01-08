@@ -837,3 +837,98 @@ Copy to clipboard
 git checkout HEAD~1
 These references are particularly handy for quickly identifying where recent changes or errors might have been introduced.
 
+==============================================================================================================
+
+Recognizing and Discarding Unwanted Changes
+As you work on your projects, it’s natural to experiment, make adjustments, or accidentally edit files. Sometimes, these changes aren’t needed, and discarding them is the best way to keep things organized. Knowing how to manage these changes can help you avoid confusion and prevent issues in your project.
+
+To keep your work tidy, we’ll explore techniques for discarding changes in your project. Git provides flexible tools to manage unwanted edits, allowing you to return files to stable states or remove them from your staging area if needed.
+
+With Git’s git checkout and git restore commands, you’ll learn how to:
+
+Restore files in your working directory to their last saved state.
+Unstage changes from the staging area with precision.
+Mastering these techniques will give you more control over what changes are kept, helping you maintain a clean, organized project.
+
+Using "git checkout HEAD" to Revert Changes
+Imagine you’ve made changes to a file but realize they’re not needed, or maybe you accidentally introduced some edits you’d like to remove. To quickly revert a file to its last committed state, you can use git checkout HEAD <file>. This command will discard any uncommitted changes in the specified file.
+
+For example:
+
+Bash
+Copy to clipboard
+# Revert changes in a specific file to its last committed state
+git checkout HEAD filename.txt
+In this case, git checkout HEAD filename.txt returns filename.txt to the state it was in during the last commit, discarding any edits made since then. This is useful when you want to undo specific file changes without affecting anything else in your project.
+
+Another option is to use git checkout -- <file>:
+
+Bash
+Copy to clipboard
+# Another way to revert changes in a specific file
+git checkout -- filename.txt
+This alternative does the same thing, reverting filename.txt to its last committed state. While both commands achieve the same result, using HEAD in git checkout HEAD <file> explicitly specifies the last commit as the source for the file’s state.
+
+Using "git restore" for Precision Control
+To give users more precise control over undoing changes, Git introduced git restore as a dedicated command. Unlike git checkout, which has multiple functions, git restore focuses solely on discarding changes in the working directory and staging area. This makes it clear that you’re specifically aiming to revert changes, helping prevent accidental switches between branches.
+
+Here’s a basic example of git restore:
+
+Bash
+Copy to clipboard
+# Revert changes in a specific file to its last committed state
+git restore filename.txt
+In this case, git restore filename.txt discards any edits made to filename.txt since the last commit, restoring it to its previously committed state. This is similar to using git checkout HEAD <file>, but git restore is dedicated solely to managing changes, making it easier to avoid misunderstandings.
+
+Advanced Usage: Using "git restore --source"
+For even more control, you can specify an exact commit to revert to by using the --source option with git restore. For example, if you want to restore a file to the state it was in two commits ago, you can do this:
+
+Bash
+Copy to clipboard
+# Restore a file to its state two commits back
+git restore --source=HEAD~2 filename.txt
+Here, git restore --source=HEAD~2 filename.txt will reset filename.txt to its state two commits ago (HEAD~2). This option allows you to revert a file to any earlier version in your project’s history, giving you flexibility to choose the exact state you need.
+
+Unstaging Changes with "git restore --staged"
+Sometimes, after staging files for a commit, you might realize that certain changes aren’t ready to be committed. git restore --staged lets you remove files from the staging area without discarding their content. The changes stay in your working directory, allowing you to continue editing as needed.
+
+Reminder: The staging area is where files are placed when you use git add, marking them for the next commit.
+
+For example:
+
+Bash
+Copy to clipboard
+# Unstage a specific file
+git restore --staged filename.txt
+In this case, git restore --staged filename.txt moves filename.txt out of the staging area and back into your working directory, without altering its contents. This is helpful when you want to review, modify, or postpone certain changes before committing.
+
+Unstaging Multiple Files
+You can also unstage multiple files at once:
+
+Bash
+Copy to clipboard
+# Unstage multiple files
+git restore --staged file1.txt file2.txt
+By using git restore --staged, you gain precise control over what’s included in each commit, ensuring that only the changes you intend to keep are staged and ready.
+
+Using "git status" as Your Guide
+Throughout the process of managing changes, keeping an eye on the status of your files is crucial. git status serves as your guide by providing an overview of which files are staged, unstaged, or need attention, along with hints for next steps. Additionally, the first line of git status displays the branch you are currently working on, ensuring you are making changes in the correct context. Here’s an example:
+
+Bash
+Copy to clipboard
+On branch main
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+        modified:   filename1.txt
+        modified:   filename2.txt
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   filename3.txt
+In this output:
+
+Branch indication: The first line, "On branch main," shows the branch you are currently on.
+Staged changes are ready to be committed. To unstage any file, Git suggests git restore --staged <file>.
+Unstaged changes need action. Use git add <file> to stage them or git restore <file> to discard changes.
+By regularly running git status, you can see what’s ready for commit, what needs review, and get command suggestions—no need to remember every Git command!
