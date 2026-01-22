@@ -1572,3 +1572,136 @@ deleted file mode 100644 indicates that the file has been removed.
 +++ /dev/null represents the absence of the file after deletion.
 Lines prefixed with - show the content of the deleted file as removed.
 These examples make it easy to understand how git diff tracks changes for newly added or deleted files, allowing you to confirm additions and removals within your project.
+
+
+===================================================================================================
+
+Understanding Rebasing
+Rebasing in Git is a method for maintaining a clean, linear commit history by "moving" commits from one branch onto another. Unlike merging, which preserves the branching structure, rebasing rearranges commits so that they appear in a sequential order. This approach helps to reduce the clutter that can occur when multiple branches are used, making the project history easier to read and understand.
+
+When you perform a rebase, Git takes the commits from your current branch and re-applies them, one by one, onto the latest version of another branch, such as main. This effectively updates your branch to include any new changes from the target branch while placing your own commits "on top" of the latest code. The result is a smooth, linear sequence of commits that gives the impression that all changes were made in a single, continuous line.
+
+Rebasing vs Merging
+Now that we understand how rebasing can simplify a commit history, let's look at how it compares to merging, another method for integrating changes from one branch into another.
+
+In collaborative projects, it's common for developers to create separate branches for different features or tasks. For example, a team might use a main branch for stable code and individual feature branches for in-progress work. Once the work on a feature branch is complete, the next step is to integrate it back into the main branch.
+
+However, as development progresses, the main branch may continue to evolve independently with new commits, creating a "gap" between it and the feature branch. To bring these branches together, Git offers two main approaches: merging and rebasing. Both integrate changes but affect the project’s history in different ways—rebasing linearizes it while merging preserves the branching paths.
+
+In this section, we’ll use an example scenario to illustrate how these two methods work:
+
+Imagine you have a feature/blog branch where you’ve been working on a blog feature, with commits like "add posts" and "add comments." Meanwhile, the main branch has received updates for other parts of the project, such as "update docs" and "fix login." To minimize conflicts and keep your branch updated, you need to incorporate updates from main into feature/blog. In the next sections, we will discuss how to integrate these changes using rebase and merge, and explore how they differ.
+
+Merge Process Explained
+In a merge, Git combines the changes from both branches, preserving their separate histories. This creates a "merge commit" to connect them.
+
+
+
+In this example, you can see the two branches diverge from their common starting point. The feature/blog branch progresses with commits related to the blog feature, while the main branch evolves separately. When changes from main are merged into feature/blog, Git creates a new merge commit that links the histories of both branches, preserving their separate paths.
+
+Rebase Process Explained
+Rebasing takes a different approach. Instead of preserving both histories, rebasing "replays" the commits from the feature branch onto the tip of the main branch, creating a linear sequence of commits.
+
+
+
+Here, the main branch has been rebased onto the feature/blog branch. Rebasing effectively "moves" the commits from main so that they appear sequentially before the commits in feature/blog, creating a smooth, linear history within the feature/blog branch.
+
+How to Perform a Rebase
+Here’s a quick guide to rebasing a feature branch onto the latest changes in main to maintain a clean, linear history.
+
+Switch to the Feature Branch
+Begin by checking out the branch you want to rebase.
+
+Bash
+Copy to clipboard
+git checkout feature/blog
+Start the Rebase
+Rebase the feature/blog branch onto main, which "replays" your commits on top of the latest changes in main.
+
+Bash
+Copy to clipboard
+git rebase main
+Note: Rebasing generates new commit hashes for each commit in the feature branch, as Git essentially rewrites each commit to fit onto the updated history.
+
+Handle Conflicts (If Needed)
+If conflicts arise, Git will pause the rebase. Handle conflicts just as you would in a merge:
+
+Open and resolve conflicts in the files manually.
+
+Stage the resolved files with git add.
+
+Continue the rebase with:
+
+Bash
+Copy to clipboard
+git rebase --continue
+If you need to stop the rebase, you can use git rebase --abort to return to the previous state.
+
+Finish the Rebase
+Once all commits are applied and any conflicts are resolved, the rebase completes. Now, your feature/blog branch has an updated, linear commit history aligned with main.
+
+When to Use (and Not to Use) Rebase
+When to Use Rebase
+
+Updating a Feature Branch: Use rebase to bring your feature branch up-to-date with the latest changes from main. This ensures your branch is aligned and avoids unnecessary merge commits, creating a clean, linear history.
+Cleaning Up Commit History: Before merging a feature branch into main, you might want to rebase it to simplify the commit history, making it easier to review and understand.
+Isolated Work: Rebasing is ideal for branches that you’re working on alone or that aren’t yet shared with others, as it rewrites commit history.
+When Not to Use Rebase
+
+On Shared/Public Branches: Avoid rebasing branches that are shared with others (e.g., main or any branch others have checked out). Rebasing rewrites commit history, which can cause confusion and conflicts for collaborators.
+After Pushing to a Remote: Once you’ve pushed a branch to a remote repository, avoid rebasing it, as it may create conflicts for anyone who has already pulled those commits.
+By following these guidelines, you can use rebasing effectively to keep your Git history tidy while avoiding potential issues in collaborative projects.
+
+Visualizing Commit History with Git Graph
+Understanding how rebasing and merging affect your project’s commit history can be further enhanced by visualizing it with the Git graph. This section provides an example of using the Git log command to view the commit history as a graph.
+
+You can use the following command to display a graphical representation of your repository's commit history:
+
+Bash
+Copy to clipboard
+git log --all --graph --oneline --decorate
+This command provides a compact view showing the sequence of commits and their branching structure. In the following sections, we will see example output of this command for both a merge and a rebase.
+
+Example: Commit History After Merge
+If you perform a merge from the feature/blog branch into the main, the commit graph would look something like this:
+
+Plain text
+Copy to clipboard
+* d725ff7 (HEAD -> feature/blog) add share
+*   b9f7c07 sync login
+|\  
+| * 487b9c2 (main) fix login
+* | 7371233 add likes
+* | 4af226d add comments
+* | 964186b sync docs
+|\| 
+| * 65aea0d update docs
+| * e5fdf37 fix typo
+* | 872ab13 add posts
+|/  
+* f0cd0d2 add readme
+* 1e356d2 init project
+In the git log --all --graph --oneline --decorate output:
+
+*: Represents an individual commit. The commit hash and message follow the *.
+|: Represents the continuity of a branch. It visually tracks the sequential flow of commits within the same branch or shows parallel branches running alongside the currently checked-out branch.
+|/: Represents branching, indicating the point where one branch diverges into two separate paths in the commit history.
+|\|: Represents merging, where changes from two branches are combined into a single commit.
+For example:
+
+| * 487b9c2 (main) fix login: This commit is on the main branch, not the currently checked-out branch (feature/blog). The | represents the parallel history of main alongside feature/blog.
+Example: Commit History After Rebase
+For a rebase of the feature/blog branch onto main, the commit history would result in a linear sequence like this:
+
+Plain text
+Copy to clipboard
+* 9bba9a7 (HEAD -> feature/blog) add share
+* 6f96e40 add likes
+* 1e68aab add comments
+* 66a91b2 add posts
+* 487b9c2 (main) fix login
+* 65aea0d update docs
+* e5fdf37 fix typo
+* f0cd0d2 add readme
+* 1e356d2 init project
+After a rebase, the feature/blog branch is rewritten to have a linear history, with its commits (add posts, add comments, add likes, add share) appearing directly on top of the latest commit in main (fix login). Unlike a merge, there are no merge commits, and the branch history is cleaner but loses the original context of branching. The commit hashes for feature/blog are rewritten, reflecting the updated base (main).
