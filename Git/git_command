@@ -1705,3 +1705,221 @@ Copy to clipboard
 * f0cd0d2 add readme
 * 1e356d2 init project
 After a rebase, the feature/blog branch is rewritten to have a linear history, with its commits (add posts, add comments, add likes, add share) appearing directly on top of the latest commit in main (fix login). Unlike a merge, there are no merge commits, and the branch history is cleaner but loses the original context of branching. The commit hashes for feature/blog are rewritten, reflecting the updated base (main).
+
+
+======================================================================================
+
+How Interactive Rebase Works
+Interactive rebase is a Git feature that allows you to carefully edit your commit history, giving you the control to make your project history cleaner and more organized. Instead of simply adding commits one after another, interactive rebase lets you take a look back and refine how changes are recorded. This can involve combining small, related commits into one, removing unnecessary changes, or reordering commits to make the development flow more logical.
+
+While a standard rebase takes a set of commits and applies them on top of another branch, interactive rebase pauses at each commit, giving you options to keep it as-is, modify it, or even remove it entirely. This extra control helps keep your project history clear and easy to understand, especially when working in teams where everyone needs to understand the progression of changes.
+
+Getting Started with Interactive Rebase
+To start an interactive rebase, you use the command:
+
+Plain text
+Copy to clipboard
+git rebase -i HEAD~N
+Here, N is the number of recent commits you want to work with. For example, git rebase -i HEAD~3 lets you edit the last three commits in your branch. Once you run this command, Git opens a list of these commits in your default text editor, showing each one with its unique identifier and message.
+
+At this point, you have a range of commands you can use to decide what happens with each commit. Each command gives you a different way to handle a commit: you can choose to keep it, merge it with others, change its message, or even remove it if it’s not needed. In the next part, we’ll explore these commands in detail so you can understand how each one can help clean up your commit history.
+
+Before Interactive Rebase
+Imagine you’re working on a "Build a Snowman" feature, and your commit history currently looks like this:
+
+Plain text
+Copy to clipboard
+u6v7w8x Melt snowman in the sun
+q3r4s5t Add carrot nos
+y9z0a1b Adjust button positions for eyes
+m0n1o2p Added buttons for eyes
+i7j8k9l Add top snowball
+e4f5g6h Add middle snowball
+a1b2c3d Add snowman base
+This history has some issues that could benefit from cleanup:
+
+Typo in a commit message: The commit "Add carrot nos" has a typo ("nos" instead of "nose") that we’ll want to fix.
+Combining related commits: The commits "Added buttons for eyes" and "Adjust button positions for eyes" both relate to the snowman’s eyes, so combining them would simplify the history.
+Removing an unnecessary commit: The commit "Melt snowman in the sun" contradicts our goal of preserving snowmen, so we’ll remove it to keep the history aligned with our objectives.
+Starting the Interactive Rebase
+To clean up this history, we start an interactive rebase on the last seven commits with the following command:
+
+Plain text
+Copy to clipboard
+git rebase -i HEAD~7
+We use HEAD~7 because it tells Git to open the last seven commits for editing. This includes all the commits we want to clean up for the "Build a Snowman" feature, capturing the typo, the related commits we want to combine, and the unnecessary commit to remove.
+
+When this command is used, Git opens an interactive editor listing the last seven commits in chronological order—from the oldest to the most recent:
+
+Plain text
+Copy to clipboard
+pick a1b2c3d Add snowman base
+pick e4f5g6h Add middle snowball
+pick i7j8k9l Add top snowball
+pick m0n1o2p Added buttons for eyes
+pick y9z0a1b Adjust button positions for eyes
+pick q3r4s5t Add carrot nos
+pick u6v7w8x Melt snowman in the sun
+Each line represents a commit, with pick as the default action, meaning Git will keep each commit as-is. Now, let’s move on to the next step: modifying this list to make the necessary changes.
+
+Interactive Rebase Commands Overview
+In the interactive rebase editor, each commit starts with the pick command by default. This tells Git to keep each commit as-is unless we choose a different action. However, interactive rebase also offers several other commands that allow us to modify each commit in different ways. Typically, you’ll see a list of these commands at the bottom of the editor as a reference:
+
+Plain text
+Copy to clipboard
+# Commands:
+# p, pick = use commit
+# r, reword = use commit, but edit the commit message
+# e, edit = use commit, but stop for amending
+# s, squash = use commit, but meld into previous commit
+# f, fixup = like "squash" but discard this commit's log message
+# x, exec = run command (the rest of the line) using shell
+# d, drop = remove commit
+Here’s a quick overview of each command:
+
+pick: Use the commit as-is. This is the default action.
+reword: Use the commit, but allow editing the commit message. This is helpful for fixing typos or clarifying messages.
+edit: Pause the rebase at this commit to make changes to its content. This command lets you modify the files within the commit, which is useful for correcting mistakes.
+squash: Combine this commit with the previous one, merging their changes and commit messages. This is ideal for cleaning up a series of related, small commits that logically belong together, like incremental changes or fixes related to a single feature or bug.
+fixup: Similar to squash, but discards the commit message of the combined commit, focusing only on merging the changes. Useful for minor fixes or adjustments that don't need a separate message, such as a typo correction or a small tweak.
+exec: Run a shell command at this point in the rebase, allowing custom actions or scripts.
+drop: Remove the commit entirely from history. This is useful for deleting commits that aren’t relevant anymore.
+In the next section, we’ll use these commands to fix our example commit history. You’ll see how to apply them to correct a typo, combine related commits, and remove an unnecessary commit.
+
+Fixing a Typo with "reword"
+The first issue we want to fix in our commit history is a typo in the message "Add carrot nos", where "nos" should be "nose." To address this, we can use the reword command to correct the message without changing the commit’s content.
+
+Since this typo is in the second most recent commit, we only need to go back two commits in the rebase. To do this, we initiate an interactive rebase with HEAD~2:
+
+Plain text
+Copy to clipboard
+git rebase -i HEAD~2
+This command opens an interactive editor listing the last two commits:
+
+Plain text
+Copy to clipboard
+pick q3r4s5t Add carrot nos
+pick u6v7w8x Melt snowman in the sun
+In the editor, we locate the line with "pick q3r4s5t Add carrot nos" and change pick to reword, so it looks like this:
+
+Plain text
+Copy to clipboard
+reword q3r4s5t Add carrot nos
+pick u6v7w8x Melt snowman in the sun
+After saving and closing the editor, Git will prompt us to edit the commit message. We can now correct the typo by changing the message to "Add carrot nose". Once we save and close the editor again, the rebase process completes with the corrected commit message.
+
+Note: Changing a commit message—even a minor typo—alters the commit’s hash. This is because the commit hash is based on the contents and metadata of the commit, including the message. Any subsequent commits will also get new hashes since rebase rewrites the history from the point of modification onward.
+
+By focusing only on the last two commits, we efficiently fix the typo without impacting the rest of the commit history. Now, let’s move on to combining related commits.
+
+Combining Related Commits with "squash"
+The next issue we want to address is that there are two closely related commits: "Added buttons for eyes" and "Adjust button positions for eyes". Since both commits pertain to the same task—adding and adjusting buttons for the snowman’s eyes—we can combine them into a single commit to keep the history cleaner.
+
+To do this, we’ll use the squash command, which merges these two commits into one while combining their messages.
+
+Since we already fixed a typo in an earlier step, our history has been rewritten once. Now we go back four commits to reach both of these related commits:
+
+Plain text
+Copy to clipboard
+git rebase -i HEAD~4
+This command opens an interactive editor listing the last four commits:
+
+Plain text
+Copy to clipboard
+pick m0n1o2p Added buttons for eyes
+pick y9z0a1b Adjust button positions for eyes
+pick z3y4x5w Add carrot nose
+pick v6w7x8y Melt snowman in the sun
+See that after we fixed a typo in a previous section, the commit hashes for "Add carrot nose" and "Melt snowman in the sun" have changed. This happened because modifying any commit in the history causes Git to reassign new hashes to all subsequent commits.
+
+To combine the related commits, we change pick to squash on the second line, so it looks like this:
+
+Plain text
+Copy to clipboard
+pick m0n1o2p Added buttons for eyes
+squash y9z0a1b Adjust button positions for eyes
+pick z3y4x5w Add carrot nose
+pick v6w7x8y Melt snowman in the sun
+We are picking the second commit to squash because squash merges the changes and message of the specified commit into the commit listed right above it. By placing the squash command on the second commit, "Adjust button positions for eyes", we are combining it with the first commit, "Added buttons for eyes", which precedes it. The result is that both changes related to the snowman's eyes are unified into a single, coherent commit.
+
+Understanding the Squash Output
+After saving and closing the editor, Git will prompt us to edit the commit message. We might choose a message like:
+
+Plain text
+Copy to clipboard
+# This is a combination of 2 commits.
+# This is the 1st commit message:
+
+Added buttons for eyes
+
+# This is the commit message #2:
+
+Adjusted button positions for eyes
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# Date:      Wed Nov 20 18:21:48 2024 +0000
+#
+# interactive rebase in progress; onto a1b2c3d
+# Last commands done (2 commands done):
+#    pick m0n1o2p Added buttons for eyes
+#    squash y9z0a1b Adjusted button positions for eyes
+# Next commands to do (2 remaining commands):
+#    pick z3y4x5w Add carrot nose
+#    pick v6w7x8y Melt snowman in the sun
+# You are currently rebasing branch 'main' on 'a1b2c3d'.
+#
+# Changes to be committed:
+#       modified:   snowman.txt
+The squash output during interactive rebase provides:
+
+Commit Combination: Lists original commit messages that are being combined, helping you merge them into a single, coherent message.
+
+Process Overview: Shows commands already executed and those pending, keeping you informed of the rebase progress.
+
+Message Crafting: Provides a section to finalize your new commit message. Lines beginning with # are comments and excluded from the final message, allowing you to focus on creating a concise summary of the combined changes.
+
+Editing the Commit Message for Squash
+If you don't modify the combined commit message, the two original messages will be preserved and concatenated, which could lead to a somewhat cluttered commit history. It's more effective to customize the message to succinctly describe the combined changes.
+
+To modify the message, manually edit it to something more concise and informative, like:
+
+Plain text
+Copy to clipboard
+Add and adjust snowman eye buttons
+After saving and closing the editor, the combined commit will be finalized with your edited message, resulting in a cleaner and more descriptive history. Here’s what the output of git log --oneline will look like now:
+
+Plain text
+Copy to clipboard
+w5x6y7z Melt snowman in the sun
+r4s3t2u Add carrot nose
+n9o8p7q Add and adjust snowman eye buttons
+i7j8k9l Add top snowball
+e4f5g6h Add middle snowball
+a1b2c3d Add snowman base
+With these related commits successfully combined, let’s move on to the next step: removing an unnecessary commit.
+
+Removing an Unnecessary Commit with "drop"
+Now that we’ve cleaned up our history by fixing typos and combining related commits, we have one more task: removing an unnecessary commit. The commit "Melt snowman in the sun" doesn’t align with our project’s goal, so we’ll delete it from the history.
+
+To do this, we’ll use the drop command, which allows us to remove a commit entirely, including its changes to the files and its commit message.
+
+Since "Melt snowman in the sun" is the most recent commit, we only need to go back one commit in the rebase:
+
+Plain text
+Copy to clipboard
+git rebase -i HEAD~1
+This command opens an interactive editor showing the last commit:
+
+Plain text
+Copy to clipboard
+pick w5x6y7z Melt snowman in the sun
+To delete this commit, we change pick to drop, so it looks like this:
+
+Plain text
+Copy to clipboard
+drop w5x6y7z Melt snowman in the sun
+After saving and closing the editor, Git will remove the specified commit from the history, along with its changes and message.
+
+By utilizing the interactive rebase editor, it's possible to address multiple changes within the same rebase session, rather than updating commits step-by-step. This approach allows you to make a variety of modifications—such as fixing typos, combining related commits, reordering commits, changing commit messages, or removing unnecessary commits—all in one go. Doing so not only streamlines the process but also maintains an organized and efficient workflow when refining your commit history.
