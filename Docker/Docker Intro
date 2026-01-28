@@ -1093,3 +1093,122 @@ Copy to clipboard
 # Run a container without any network connectivity
 docker run --network none alpine
 Using --network none ensures that the container starts without any network interfaces, keeping it isolated and preventing connectivity to the internet or any other network resources.
+
+====================================================================================
+
+Setting Up a Custom Host Entry in Docker
+By default, a Docker container can communicate with the host machine through its network interfaces. However, without specific configurations, this communication can be cumbersome, especially if the host's IP address changes. To streamline and simplify this process, we configure a custom host entry using the --add-host option when starting a Docker container. This defines how the container's DNS system maps a specific hostname to an IP address, essentially creating a custom DNS entry inside the container.
+
+Here’s the command structure:
+
+Bash
+Copy to clipboard
+# Run a Docker container with a custom host entry
+docker run --add-host <hostname>:<ip-address> <image>
+<hostname>: This is the alias or name that the container will use to refer to the host machine. For example, host.docker.internal is a Docker-provided alias that represents the host machine.
+
+<ip-address>: This is the IP address that the hostname maps to. Using host-gateway allows Docker to automatically resolve this to the host machine's network gateway IP, providing a direct communication path to the host.
+
+This configuration is particularly useful in networking setups where containers need to access services running on your host machine.
+
+Practical Example: Running a Container with a Custom Host Entry
+Let's apply what we've learned with a straightforward command to set up communication between a Docker container and the host machine:
+
+Bash
+Copy to clipboard
+# Run an Alpine container and map a custom host entry to the host machine
+docker run --add-host host.docker.internal:host-gateway -it alpine
+Here's a breakdown:
+
+host.docker.internal: In this example, we're using host.docker.internal as the alias, which is a special hostname provided by Docker as a convenient alias for containers to reference and communicate with the host machine. However, you can replace this with any custom alias of your choice.
+
+host-gateway: This is a special Docker feature that resolves to the internal network gateway IP. It connects your Docker environment to the host's network, simplifying the connection process between the container and the host machine.
+
+In this example, the -it option is used to run the container interactively with a terminal session, making it easier for us to test the connection from inside the container.
+
+Validating Connectivity from Container to Host Machine
+Once you have your container running, it's time to test the setup to ensure that communication is working as expected. Inside the container, execute the following command:
+
+Plain text
+Copy to clipboard
+/ # ping host.docker.internal
+When you run this command, you should see an output that resembles:
+
+Plain text
+Copy to clipboard
+PING host.docker.internal (172.17.0.1): 56 data bytes
+64 bytes from 172.17.0.1: seq=0 ttl=64 time=0.067 ms
+64 bytes from 172.17.0.1: seq=1 ttl=64 time=0.063 ms
+...
+This output indicates that packets are successfully being sent from the container to the host machine, confirming that the communication is established.
+
+Common Doubts About Container-Host Communication
+Here are some common questions and clarifications regarding container-host communication:
+
+Can I use any alias for the host machine?
+
+Yes, you can use any alias of your choice to refer to the host machine, as long as it is consistent in your container's DNS configuration. However, using an established alias like host.docker.internal can simplify communication setup and ensure clarity in your setup.
+Why use host.docker.internal?
+
+host.docker.internal is a special hostname provided by Docker, which serves as a convenient alias for containers to reference the host machine. It simplifies the setup process by providing a reliable and predictable way to communicate with the host, especially in environments where the host's IP address might change.
+Is using host-gateway necessary?
+
+Using the host-gateway option is highly recommended as it automatically resolves to the network gateway IP of the host machine within Docker's networking system. This provides a seamless and consistent way to ensure that your container can communicate with the host, regardless of underlying network changes.
+Can I manually use the IP address of the host machine instead of host-gateway?
+
+Yes, you can manually specify the host machine's IP address in place of host-gateway. However, this approach requires you to know the correct IP address and update it manually if the IP changes. Using host-gateway is generally a better option for maintaining flexibility and reducing manual configuration updates.
+
+Creating a User-Defined Network
+To begin, let's create a user-defined network in Docker. User-defined networks provide greater flexibility and control compared to Docker's default bridge network. They allow containers to communicate with each other using container names as hostnames, which makes linking and managing containers much simpler.
+
+To create a network, use the following command in your terminal:
+
+Bash
+Copy to clipboard
+# Create a user-defined network
+docker network create my_network
+This command creates a network named my_network. Docker assigns a unique subnet and gateway to this network, separate from Docker’s default networks, ensuring there is no interference. By using a user-defined network, containers can resolve each other by name, enhancing ease of communication.
+
+For more details about this command, you can visit the official Docker network create documentation.
+
+Launching and Connecting Containers
+With our network set up, let's launch two containers and connect them to my_network. We will use lightweight Alpine Linux containers for this purpose. As a reminder, we perform this step to allow containers to communicate over the created network.
+
+Here's how to launch the first container:
+
+Bash
+Copy to clipboard
+# Start the first container with Alpine and connect it to the network
+docker run -d --name container1 --network my_network alpine sleep infinity
+This command runs an Alpine Linux container named container1 and connects it to our defined network my_network. The container is set to run indefinitely (sleep infinity) so it remains active for our communication tests.
+
+Now, let's launch the second container with the following command:
+
+Bash
+Copy to clipboard
+# Start the second container with Alpine and connect it to the network
+docker run -d --name container2 --network my_network alpine sleep infinity
+Similarly, this creates another Alpine container named container2, also connected to my_network. Both containers are now active and connected to the same network, allowing them to engage in inter-container communication.
+
+Inter-Container Communication
+Once both containers are active and connected to my_network, they can communicate using their assigned names as hostnames. For instance, if container1 wants to reach container2, it can do so by using the command ping container2. Docker's internal DNS resolution capabilities within a user-defined network allow containers to identify each other by name, facilitating seamless communication.
+
+When container1 attempts to ping container2, a successful connection would display an output similar to the following:
+
+Copy to clipboard
+PING container2 (172.18.0.3): 56 data bytes
+64 bytes from 172.18.0.3: seq=0 ttl=64 time=0.055 ms
+64 bytes from 172.18.0.3: seq=1 ttl=64 time=0.046 ms
+...
+This output confirms successful communication between the two containers over the established network, showcasing Docker's capacity for container intercommunication.
+
+Troubleshooting Tips for Inter-Container Communication
+If you encounter issues where containers cannot reach each other, there are a few troubleshooting steps to consider:
+
+Network Configuration: Ensure both containers are connected to the correct network. Misconfigured network settings can prevent communication.
+
+Container Names: Make sure the container names used in communication commands match exactly those specified during container creation. Names are crucial for DNS resolution.
+
+Container Status: Verify that both containers are running. If a container has stopped, restart it.
+
+By addressing these common issues, you can effectively resolve most inter-container communication obstacles.
