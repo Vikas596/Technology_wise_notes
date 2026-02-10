@@ -1212,3 +1212,105 @@ Container Names: Make sure the container names used in communication commands ma
 Container Status: Verify that both containers are running. If a container has stopped, restart it.
 
 By addressing these common issues, you can effectively resolve most inter-container communication obstacles.
+
+============================================================================================================
+
+Docker Network Management
+It's time to harness your skills and concepts learned from previous lessons to effectively manage Docker networks. This lesson focuses on providing you with essential commands and techniques for listing, inspecting, removing, and pruning networks. Network management is a vital skill in handling containerized applications, ensuring your environments remain organized and efficient. By mastering these commands, you will ensure smooth and efficient networking processes within your Docker setup.
+
+Listing Docker Networks
+Let's begin by learning how to list all the existing Docker networks. The docker network ls command is your go-to tool for this task. It displays a table of network names, IDs, and types.
+
+For example, executing the command will output a detailed list of networks currently in your environment:
+
+Bash
+Copy to clipboard
+# List all networks
+docker network ls
+If you haven't created any additional networks, you might see an output similar to this, showing the default ones:
+
+Plain text
+Copy to clipboard
+NETWORK ID     NAME         DRIVER    SCOPE
+5ced7c00b3cc   bridge       bridge    local
+eb929830749a   host         host      local
+6227f1d2f9b8   none         null      local
+These are the default networks Docker provides:
+
+bridge: A bridge network is a private internal network created by Docker on the host. Containers on this network can communicate with each other and with external hosts.
+host: A host network removes network isolation between the Docker host and the Docker containers to use the host's networking directly.
+none: This network adds a container to a container-specific network stack without any network interfaces.
+These default networks are foundational, but understanding network specifics requires a deeper dive, which we will explore next. To learn more about the docker network ls command, you can visit the official Docker network ls documentation.
+
+Inspecting Docker Networks
+Understanding the details of your networks is crucial for diagnosing and managing container connections. The docker network inspect <network_name> command provides comprehensive information about a network's settings, such as subnetting, connected containers, and driver configuration.
+
+For example, inspecting the my_network network will yield output like:
+
+Bash
+Copy to clipboard
+# See details of a network
+docker network inspect my_network
+Key details include:
+
+JSON
+Copy to clipboard
+[
+    {
+        "Name": "my_network",
+        "Driver": "bridge",
+        "IPAM": {
+            "Driver": "default",
+            "Config": [
+                {
+                    "Subnet": "172.22.0.0/16",
+                    "Gateway": "172.22.0.1"
+                }
+            ]
+        },
+        "Containers": {
+            "d08d71e60ff48c4136e92535e082c7e8aea5590e931e743a393ce3675fd8b158": {
+                "Name": "container2",
+                "IPv4Address": "172.22.0.3/16"
+            }
+        },
+        // Other details ...
+    }
+]
+Name and Driver: The network's name ("my_network") and driver ("bridge") indicate it's a user-defined bridge network, allowing containers to communicate within this subnet.
+
+IPAM Configuration: Specifies the IP address management settings, including subnet ("172.22.0.0/16") and gateway ("172.22.0.1"), crucial for defining the network's address space.
+
+Containers Section: Lists connected containers, providing details such as the container's name ("container2") and its assigned IP ("172.22.0.3/16"), essential for understanding container communication paths within the network.
+
+This command helps ensure network configurations align with your desired architecture, verifying connected container names and IPs within the network. For more detailed information about the docker network inspect command, refer to the official Docker network inspect documentation.
+
+Removing Docker Networks
+To maintain a clutter-free and efficient working environment, it is sometimes necessary to remove networks. If you need to delete a specific network, you can use the docker network rm command. This command effectively removes the network, as long as it is not currently being used by any running containers.
+
+For instance, to remove a network named my_network, you would perform this action:
+
+Bash
+Copy to clipboard
+# Remove a network
+docker network rm my_network
+It’s important to note that attempting to remove a network with connected running containers will result in an error. Ensure that no containers are connected to the network before trying to remove it. For further insight into the docker network rm command, you can check out the official Docker network rm documentation.
+
+Pruning Unused Docker Networks
+After removing specific networks when necessary, you may find it more efficient to manage unused networks collectively. The docker network prune command serves this purpose by automatically removing all networks not currently utilized by active containers. If you're curious about more specifics regarding this command, visit the official Docker network prune documentation.
+
+By executing the command:
+
+Bash
+Copy to clipboard
+# Remove all unused networks
+docker network prune
+The system efficiently cleans up and deletes these redundant networks, providing output such as:
+
+Plain text
+Copy to clipboard
+WARNING! This will remove all custom networks not used by at least one container.
+Are you sure you want to continue? [y/N] y
+Deleted Networks:
+my_unused_network
+By using the docker network prune command, you efficiently remove networks that are not linked to active containers, maintaining a tidy Docker environment. A few courses ago, when you encountered docker system prune, the focus might not have been on networks, but it's crucial to remember that this command also removes unused networks, alongside other unused resources like containers and images, ensuring overall system cleanliness and efficiency.
