@@ -1314,3 +1314,57 @@ Are you sure you want to continue? [y/N] y
 Deleted Networks:
 my_unused_network
 By using the docker network prune command, you efficiently remove networks that are not linked to active containers, maintaining a tidy Docker environment. A few courses ago, when you encountered docker system prune, the focus might not have been on networks, but it's crucial to remember that this command also removes unused networks, alongside other unused resources like containers and images, ensuring overall system cleanliness and efficiency.
+
+
+============================================================================
+
+Understanding the Network Connect Command
+When working with Docker, there will be situations where you need to connect a container to a network after it has been created. This is where the docker network connect command comes into play. It allows you to dynamically attach a running container to a specified Docker network, enabling it to communicate with other containers on that network.
+
+The basic syntax is:
+
+Bash
+Copy to clipboard
+# Basic syntax to connect a container to a network
+docker network connect <network_name> <container_name_or_id>
+By using this command, you allow the container to gain network functionalities and addresses related to the specified network. This is particularly useful for multi-container applications where containers may need to join or leave networks frequently according to their responsibilities and interactions.
+
+You can explore more details about the command in the official Docker network connect documentation.
+
+Connecting a Container to a Network: Example
+Let’s go through a step-by-step guide to connect a container to a network. Consider a situation where we have a container named web_container and a network named frontend_network. Using the docker network connect command, you can connect the container to the network like this:
+
+Bash
+Copy to clipboard
+# Connect the web_container to frontend_network
+docker network connect frontend_network web_container
+Upon successful execution, web_container will become a member of frontend_network, meaning it can now resolve and communicate with other containers on the same network. If you inspect the container afterward, you will see additional network configurations reflecting this new connection.
+
+It's straightforward yet powerful, allowing you to add connectivity capabilities to your containers on the fly.
+
+Understanding the Network Disconnect Command
+Just as important as connecting, disconnecting a container from a network is sometimes necessary to limit or change its communication paths. This is where the docker network disconnect command is utilized. It allows you to remove a container from a specific network while the container remains active.
+
+The command structure is:
+
+Bash
+Copy to clipboard
+# Basic syntax to disconnect a container from a network
+docker network disconnect <network_name> <container_name_or_id>
+By leveraging this command, you can isolate a container from a network, effectively blocking its ability to interact with other containers on that network. This can be particularly useful in scenarios where network isolation for security or testing purposes is required.
+
+For more information on this command, you can visit the official Docker network disconnect documentation.
+
+Disconnecting a Container from a Network: Example
+Imagine you need to disconnect the same web_container from the frontend_network due to a change in network architecture or for maintenance work. Simply execute the following command:
+
+Bash
+Copy to clipboard
+# Disconnect the web_container from frontend_network
+docker network disconnect frontend_network web_container
+Once executed, this command will ensure that web_container is no longer part of frontend_network, and it will cease communication with containers still connected to that network. It's a simple yet effective way to manage network connections in dynamic, real-time environments.
+
+Common Use Cases and Best Practices
+There are numerous scenarios where managing connections with docker network connect and docker network disconnect becomes vital. For instance, in staging environments, you might frequently adjust network configurations to test different container arrangements. In security-sensitive applications, you may need to isolate containers during updates or vulnerability assessments. Best practices suggest that you regularly audit network connections to ensure containers are part of the correct networks for their expected functionality.
+
+Understanding when and how to connect or disconnect containers is crucial for maintaining clean and effective Docker environments. Remember, frequent and unnecessary disconnections can lead to dropped packets and communication issues if not managed properly.
